@@ -1,0 +1,10 @@
+{
+  "mcpServers": {
+    "blog-visual-tools": {
+      "command": "python",
+      "args": ["mcp_server/server.py"],
+      "cwd": "/home/sainerella/Documents/Agentic_Gen_AI_Projects_courses/New/Agentic_Blog_writer",
+      "env": {}
+    }
+  }
+}
