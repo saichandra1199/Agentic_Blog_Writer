@@ -31,7 +31,7 @@ def get_input() -> tuple[str, str]:
         print("❌ Title cannot be empty.")
         sys.exit(1)
     print("\nContext (what you want covered, tone, audience, key points):")
-    print("(Press Enter twice when done)\n")
+    print("(Press Enter thrice when done)\n")
     lines = []
     while True:
         line = input()
@@ -48,6 +48,9 @@ def main():
     from graph import build_graph
 
     title, context = get_input()
+
+    from config import get_blog_config
+    blog_config = get_blog_config()
 
     print(f"\n🚀 Starting blog generation pipeline...")
     print(f"   Title: {title}")
@@ -84,7 +87,7 @@ def main():
     step_start = pipeline_start
     final_state = None
 
-    for event in app.stream({"title": title, "context": context}):
+    for event in app.stream({"title": title, "context": context, "blog_config": blog_config}):
         for node_name in steps:
             if node_name in event:
                 elapsed_step = time.time() - step_start
@@ -115,6 +118,12 @@ def main():
             print("=" * 60)
             for i, idea in enumerate(suggestions, 1):
                 print(f"  {i}. {idea}")
+
+        print("\n" + "=" * 60)
+        publish = input("🚀 Publish to Medium? (y/N): ").strip().lower()
+        if publish == "y":
+            from nodes.publisher import publish_to_medium
+            publish_to_medium(final_state)
 
 
 if __name__ == "__main__":

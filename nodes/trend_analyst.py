@@ -40,8 +40,10 @@ def trend_analyst_node(state: BlogState) -> BlogState:
     format_results = search_tool.invoke(format_query)
 
     def fmt(results):
+        if isinstance(results, str):
+            return results
         return "\n\n".join(
-            f"**Source:** {r.get('url', 'N/A')}\n{r.get('content', '')}"
+            r if isinstance(r, str) else f"**Source:** {r.get('url', 'N/A')}\n{r.get('content', '')}"
             for r in results
         )
 

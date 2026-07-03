@@ -181,15 +181,16 @@ _TEMPLATE = """<!DOCTYPE html>
 
 
 def _fix_image_paths(html: str, md_path: str) -> str:
-    """Replace output/visuals/ relative paths with absolute file:// URLs."""
-    md_dir = Path(md_path).parent.resolve()
-    # Match src="output/visuals/..." — make absolute
+    """Replace local paths with absolute file:// URLs."""
+    cwd = Path.cwd().resolve()
     def abs_src(m):
         raw = m.group(1)
-        # Already absolute or remote
-        if raw.startswith(("http://", "https://", "file://", "/")):
+        if raw.startswith(("http://", "https://", "file://")):
             return m.group(0)
-        abs_path = (md_dir / raw).resolve()
+        if raw.startswith("/"):
+            return f'src="file://{raw}"'
+        # Paths like output/visuals/... are relative to CWD, not the md file
+        abs_path = (cwd / raw).resolve()
         return f'src="file://{abs_path}"'
     return re.sub(r'src="([^"]+)"', abs_src, html)
 

@@ -3,13 +3,12 @@ from langchain_core.messages import SystemMessage, HumanMessage
 from state import BlogState
 
 
-SYSTEM_PROMPT = """You are an expert blog architect specializing in Medium-style long-form content.
+BASE_PROMPT = """You are an expert blog architect specializing in Medium-style long-form content.
 
 Create a detailed, engaging blog outline that:
 - Opens with a compelling hook or relatable problem — shaped by what's trending right now
 - Flows logically from introduction to conclusion
 - Includes H1 (title), H2 (main sections), H3 (subsections) structure
-- Has 5-8 main sections for depth without overwhelming readers
 - Ends with clear takeaways or a call to action
 
 Use the Trend Insights to pick the best angle, format, and hook style for maximum engagement.
@@ -19,6 +18,17 @@ Output in clean Markdown outline format."""
 
 def outline_generator_node(state: BlogState) -> BlogState:
     llm = ChatOpenAI(model="gpt-4o", temperature=0.5)
+
+    cfg = state.get("blog_config") or {}
+    section_range = cfg.get("section_range", "5–8")
+    fmt           = cfg.get("format", "Deep Dive")
+    audience      = cfg.get("audience", "Intermediate")
+
+    SYSTEM_PROMPT = f"""{BASE_PROMPT}
+
+Sections: {section_range} main sections.
+Blog format: {fmt}.
+Target audience: {audience}."""
 
     messages = [
         SystemMessage(content=SYSTEM_PROMPT),

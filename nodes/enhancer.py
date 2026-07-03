@@ -4,7 +4,7 @@ from state import BlogState
 from mcp_server.visual_tools import process_blog_visuals
 
 
-SYSTEM_PROMPT = """You are a fun, sarcastic visual content specialist who makes blogs engaging and impossible to stop reading.
+BASE_PROMPT = """You are a fun, sarcastic visual content specialist who makes blogs engaging and impossible to stop reading.
 
 Your job: enhance a blog post with visuals that make readers FEEL something — laugh, go "whoa", nod vigorously, or cringe at a relatable truth.
 
@@ -15,6 +15,7 @@ Your job: enhance a blog post with visuals that make readers FEEL something — 
    flowchart LR ...
    ```
    Use: flowchart, sequenceDiagram, graph, mindmap, quadrantChart, timeline
+   {diagram_instruction}
 
 2. **Stock Images** — Contextual photos that set the scene or illustrate the point:
    <!-- 📸 Image: [vivid description — e.g. "developer staring intensely at multiple monitors late at night"] -->
@@ -27,8 +28,7 @@ Your job: enhance a blog post with visuals that make readers FEEL something — 
    - After explaining something genuinely complex ("mind blown" or "confused")
    - After a sarcastic jab or obvious truth ("this is fine", "sarcastic")
    - Near the conclusion ("celebrate", "mic drop", "nailed it")
-   - Anytime the tone is too dry and needs levity
-   Place 2–4 GIFs spread throughout the post. Don't cluster them.
+   Place AT MOST {max_gifs} GIF(s) per post, spread apart. Don't cluster them.
 
 4. **Markdown Tables** — Convert any prose comparing 3+ items into a clean table.
 
@@ -49,8 +49,23 @@ Your job: enhance a blog post with visuals that make readers FEEL something — 
 def enhancer_node(state: BlogState) -> BlogState:
     llm = ChatOpenAI(model="gpt-4o", temperature=0.4)
 
+    cfg = state.get("blog_config") or {}
+    max_gifs = cfg.get("max_gifs", 2)
+    diagrams = cfg.get("diagrams", True)
+
+    diagram_instruction = (
+        "Add Mermaid diagrams where they genuinely clarify a concept."
+        if diagrams else
+        "Do NOT add any Mermaid diagrams."
+    )
+
+    system_prompt = BASE_PROMPT.format(
+        max_gifs=max_gifs,
+        diagram_instruction=diagram_instruction,
+    )
+
     messages = [
-        SystemMessage(content=SYSTEM_PROMPT),
+        SystemMessage(content=system_prompt),
         HumanMessage(content=f"""Enhance the following blog post with appropriate visual elements:
 
 {state['edited_draft']}"""),
@@ -80,6 +95,6 @@ def enhancer_node(state: BlogState) -> BlogState:
 | **Tags** | {", ".join(f"`{t}`" for t in tags)} |
 """
 
-    enhanced = process_blog_visuals(response.content)
+    enhanced = process_blog_visuals(response.content, max_gifs=max_gifs)
     final_blog = enhanced + seo_footer
     return {**state, "final_blog": final_blog}

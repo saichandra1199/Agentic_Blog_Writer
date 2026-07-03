@@ -24,10 +24,14 @@ def researcher_node(state: BlogState) -> BlogState:
     search_query = f"{state['title']} latest trends examples statistics 2024 2025"
     raw_results = search_tool.invoke(search_query)
 
-    search_text = "\n\n".join(
-        f"**Source:** {r.get('url', 'N/A')}\n{r.get('content', '')}"
-        for r in raw_results
-    )
+    if isinstance(raw_results, str):
+        search_text = raw_results
+    else:
+        search_text = "\n\n".join(
+            f"**Source:** {r.get('url', 'N/A')}\n{r.get('content', '')}"
+            if isinstance(r, dict) else str(r)
+            for r in raw_results
+        )
 
     messages = [
         SystemMessage(content=SYSTEM_PROMPT),

@@ -3,7 +3,7 @@ from langchain_core.messages import SystemMessage, HumanMessage
 from state import BlogState
 
 
-SYSTEM_PROMPT = """You are a top influencer-style blog writer for Medium — think Ali Abdaal, Lenny Rachitsky,
+BASE_PROMPT = """You are a top influencer-style blog writer for Medium — think Ali Abdaal, Lenny Rachitsky,
 or Sahil Bloom. You write content that gets shared, saved, and remembered.
 
 Core influencer writing principles to apply:
@@ -17,13 +17,32 @@ Core influencer writing principles to apply:
 - **End sections with a "so what"** — never leave a section without the implication for the reader
 
 Use the Trend Insights to match the format, angle, and emotional tone that's currently winning.
-
-Target 1500-2500 words. Full Markdown. # H1, ## H2, ### H3.
-No placeholders. Write everything completely."""
+Full Markdown. # H1, ## H2, ### H3. No placeholders. Write everything completely."""
 
 
 def writer_node(state: BlogState) -> BlogState:
     llm = ChatOpenAI(model="gpt-4o", temperature=0.7)
+
+    cfg = state.get("blog_config") or {}
+    word_range    = cfg.get("word_range", "1500–2500")
+    tone          = cfg.get("tone", "Conversational / Influencer style")
+    audience      = cfg.get("audience", "Intermediate")
+    fmt           = cfg.get("format", "Deep Dive")
+    diagrams      = cfg.get("diagrams", True)
+
+    diagram_note = (
+        "Include Mermaid diagrams (```mermaid blocks) where they add clarity."
+        if diagrams else
+        "Do NOT include any Mermaid diagrams."
+    )
+
+    SYSTEM_PROMPT = f"""{BASE_PROMPT}
+
+Target word count: {word_range} words.
+Tone: {tone}.
+Target audience: {audience}.
+Blog format: {fmt}.
+{diagram_note}"""
 
     messages = [
         SystemMessage(content=SYSTEM_PROMPT),

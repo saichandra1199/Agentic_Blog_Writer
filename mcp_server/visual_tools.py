@@ -88,7 +88,7 @@ def fetch_stock_image(query: str, filename: str = "image") -> dict:
                 path = VISUALS_DIR / f"{filename}.jpg"
                 path.write_bytes(img_resp.content)
                 caption = f"\n*Photo by {photographer} on Unsplash*" if photographer else ""
-                return {"path": str(path), "markdown": f"![{alt}]({path}){caption}"}
+                return {"path": str(path), "url": img_url, "markdown": f"![{alt}]({img_url}){caption}"}
 
     # 2. Pexels
     pexels_key = os.environ.get("PEXELS_API_KEY", "")
@@ -110,7 +110,7 @@ def fetch_stock_image(query: str, filename: str = "image") -> dict:
                     path = VISUALS_DIR / f"{filename}.jpg"
                     path.write_bytes(img_resp.content)
                     caption = f"\n*Photo by {photographer} on Pexels*" if photographer else ""
-                    return {"path": str(path), "markdown": f"![{alt}]({path}){caption}"}
+                    return {"path": str(path), "url": img_url, "markdown": f"![{alt}]({img_url}){caption}"}
 
     # 3. Lorem Picsum fallback — deterministic seed from query, no auth needed
     seed = abs(hash(query)) % 1000
@@ -120,7 +120,8 @@ def fetch_stock_image(query: str, filename: str = "image") -> dict:
         resp.raise_for_status()
     path = VISUALS_DIR / f"{filename}.jpg"
     path.write_bytes(resp.content)
-    return {"path": str(path), "markdown": f"![{query}]({path})"}
+    final_url = resp.url  # resolved URL after redirects
+    return {"path": str(path), "url": str(final_url), "markdown": f"![{query}]({final_url})"}
 
 
 def generate_ai_image(prompt: str, filename: str = "ai_image") -> dict:
@@ -185,7 +186,7 @@ def render_diagram(code: str, diagram_type: str = "plantuml", filename: str = "d
     return {"path": str(path), "markdown": f"![{filename}]({path})"}
 
 
-def process_blog_visuals(blog_content: str) -> str:
+def process_blog_visuals(blog_content: str, max_gifs: int = 2) -> str:
     """Post-process blog markdown:
     - Render ```mermaid blocks → PNG via mermaid.ink
     - Replace <!-- 📸 Image: ... --> → contextual stock photo
@@ -229,6 +230,8 @@ def process_blog_visuals(blog_content: str) -> str:
 
     def replace_gif(match):
         gif_counter[0] += 1
+        if gif_counter[0] > max_gifs:
+            return ""
         query = match.group(1).strip()
         try:
             return fetch_gif(query)["markdown"]
