@@ -30,4 +30,4 @@ def seo_analyzer_node(state: BlogState) -> BlogState:
     except json.JSONDecodeError:
         seo_data = {"raw": raw}
 
-    return {**state, "seo_data": seo_data}
+    return {"seo_data": seo_data}

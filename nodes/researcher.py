@@ -46,4 +46,4 @@ Synthesize the above into structured research notes to support writing this blog
     ]
 
     response = llm.invoke(messages)
-    return {**state, "research": response.content}
+    return {"research": response.content}

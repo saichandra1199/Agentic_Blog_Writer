@@ -24,4 +24,4 @@ def editor_node(state: BlogState) -> BlogState:
     ]
 
     response = llm.invoke(messages)
-    return {**state, "edited_draft": response.content.strip()}
+    return {"edited_draft": response.content.strip()}

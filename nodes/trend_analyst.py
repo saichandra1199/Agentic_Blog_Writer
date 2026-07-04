@@ -81,7 +81,6 @@ Analyze trends and provide influencer-style writing insights + 5 next blog ideas
             ]
 
     return {
-        **state,
         "trend_insights": trend_insights,
         "next_blog_suggestions": next_blog_suggestions,
     }

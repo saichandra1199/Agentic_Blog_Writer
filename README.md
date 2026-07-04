@@ -2,7 +2,7 @@
 
 **Turn a title and a few notes into a publication-ready blog post — automatically.**
 
-Give it a topic and some context. A graph of specialized AI agents — running in parallel where possible — researches the web, analyzes trends, builds a structured outline, writes a full draft, edits it while a separate agent handles SEO concurrently, enriches it with diagrams, images, and GIFs, saves it as Markdown + HTML, and optionally publishes it directly to Medium — all in 3–5 minutes.
+Give it a topic and some context. A chain of specialized AI agents researches the web, builds a structured outline, writes a full draft, edits it for clarity and SEO, then enriches it with diagrams, tables, and callout blocks. Output lands as a clean Markdown file ready to paste into Medium.
 
 > **Deep dive:** For full system design, architecture, script-by-script breakdown, benefits/drawbacks, and beginner guide — see **[PROJECT.md](PROJECT.md)**.
 
