@@ -15,6 +15,6 @@ wheels/
 # extraneous files (not needed)
 *.log
 next_plan.txt
-plan.md
-.codemie
+.codemie/
+explain/
 

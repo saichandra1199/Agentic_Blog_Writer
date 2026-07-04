@@ -65,16 +65,18 @@ def main():
         "outline_generator",
         "writer",
         "editor",
+        "seo_analyzer",
         "enhancer",
         "save_output",
     ]
     step_labels = {
         "context_enhancer": "🧠 Enhancing context",
-        "researcher":        "🔍 Researching",
-        "trend_analyst":     "📈 Analyzing trends",
+        "researcher":        "🔍 Researching          ◀ parallel",
+        "trend_analyst":     "📈 Analyzing trends     ◀ parallel",
         "outline_generator": "📋 Generating outline",
         "writer":            "✍️  Writing draft",
-        "editor":            "✏️  Editing & SEO",
+        "editor":            "✏️  Editing              ◀ parallel",
+        "seo_analyzer":      "🔖 Analyzing SEO        ◀ parallel",
         "enhancer":          "🎨 Adding visuals & GIFs",
         "save_output":       "💾 Saving",
     }
