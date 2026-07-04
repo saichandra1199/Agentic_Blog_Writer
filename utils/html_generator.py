@@ -1,5 +1,4 @@
 """Convert a blog markdown file → beautiful Medium-style HTML page."""
-import os
 import re
 from datetime import datetime
 from pathlib import Path

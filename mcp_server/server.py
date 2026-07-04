@@ -77,7 +77,6 @@ def html_preview(md_path: str) -> str:
     """Convert a saved blog .md file to a beautiful HTML page for browser preview.
     Pass the path to the .md file. Returns the path of the generated .html file."""
     from pathlib import Path as P
-    import markdown as _md
     from utils.html_generator import generate_html
     md_path_obj = P(md_path)
     content = md_path_obj.read_text(encoding="utf-8")
